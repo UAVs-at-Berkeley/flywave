@@ -153,7 +153,7 @@ def worker(input_q, output_q):
 
 
 from Bebop import Bebop
-from DroneVision import DroneVision
+from DroneVisionGUI import DroneVisionGUI
 import threading
 import cv2
 import time
@@ -174,7 +174,40 @@ class UserVision:
     def detect(self, args):
         img = self.vision.get_latest_valid_picture()
 
-# make my bebop object
+def detection(drone_vision, args):
+            userVision = UserVision(bebopVision)
+            bebopVision.set_user_callback_function(userVision.save_pictures, user_callback_args=None)
+            success = bebopVision.open_video()
+            # bebop.safe_takeoff(10)
+            bebop.smart_sleep(10)
+            ("Take off")
+            count = 0
+
+            while True and success and count < 200:  # fps._numFrames < 120
+                frame = userVision.vision.get_latest_valid_picture()
+                input_q.put(frame)
+
+                t = time.time()
+
+                # drone_movement.goto(vehicle, offset_y, offset_x, vehicle.simple_goto)
+                #print("OUTPUT", box_x, " ", box_y)
+                if count % 10 == 0:
+                    output_rgb = cv2.cvtColor(output_q.get(), cv2.COLOR_RGB2BGR)
+                    filename = "/test/test_image_%06d.png" % count
+                    cv2.imwrite(filename, output_rgb)
+                # cv2.imshow('Video', output_rgb)
+                # fps.update()
+
+                print('[INFO] elapsed time: {:.2f}'.format(time.time() - t))
+                #print(get_center())
+                count += 1
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+
+            # bebop.safe_land(10)
+            bebopVision.close_video()
+            bebop.disconnect()
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -205,38 +238,9 @@ if __name__ == '__main__':
     isAlive = False
     bebop = Bebop()
     success = bebop.connect(5)
-    count = 0
     print("Drone Initialized " + str(success))
     if success:
-        bebopVision = DroneVision(bebop, is_bebop=True)
-
-        userVision = UserVision(bebopVision)
-        bebopVision.set_user_callback_function(userVision.save_pictures, user_callback_args=None)
-        success = bebopVision.open_video()
-        # bebop.safe_takeoff(10)
-        bebop.smart_sleep(30)
-        ("Take off")
-        while True and success:  # fps._numFrames < 120
-            frame = userVision.vision.get_latest_valid_picture()
-            input_q.put(frame)
-
-            t = time.time()
-
-            # drone_movement.goto(vehicle, offset_y, offset_x, vehicle.simple_goto)
-            #print("OUTPUT", box_x, " ", box_y)
-            output_rgb = cv2.cvtColor(output_q.get(), cv2.COLOR_RGB2BGR)
-            cv2.imshow('Video', output_rgb)
-            # fps.update()
-
-            print('[INFO] elapsed time: {:.2f}'.format(time.time() - t))
-            #print(get_center())
-            count += 1
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-
-        # bebop.safe_land(10)
-        bebopVision.close_video()
-        bebop.disconnect()
+        bebopVision = DroneVisionGUI(bebop, is_bebop=True)
     else:
         print("Error: Bebop not found")
     # fps.stop()

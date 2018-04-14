@@ -107,7 +107,7 @@ class DroneVision:
 
         # immediately start the vision buffering (before we even know if it succeeded since waiting puts us behind)
         self._start_video_buffering()
-            
+
         # open non-blocking readers to look for errors or success
         print("Opening non-blocking readers")
         stderr_reader = NonBlockingStreamReader(self.ffmpeg_process.stderr)
@@ -226,7 +226,7 @@ class DroneVision:
 
             # put the thread back to sleep for faster than fps to ensure we stay on top of the frames
             time.sleep(1.0 / (2.0 * self.fps))
-        
+
 
     def get_latest_valid_picture(self):
         """
@@ -250,4 +250,3 @@ class DroneVision:
         # send the command to kill the vision stream (bebop only)
         if (self.is_bebop):
             self.drone_object.stop_video_stream()
-
