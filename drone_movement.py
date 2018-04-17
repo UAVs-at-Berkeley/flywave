@@ -3,13 +3,15 @@
 # from pymavlink import mavutil # Needed for command message definitions
 import time
 import math
+from Bebop import Bebop
 # from pynput.keyboard import Controller
 # # import time
 #
-def move(offset_x, offset_y, time):
+bebop = Bebop()
+def move(offset_x, offset_y, offset_z=0, time):
     # keyboard = Controller()
     # print(offset_x, offset_y)
-    text_file = open("buffer.txt", "w")
+    ''' text_file = open("buffer.txt", "w")
 
     target_y = 1
     target_x = 0
@@ -23,7 +25,11 @@ def move(offset_x, offset_y, time):
     if offset_x - target_x > 0:
         text_file.write("a")
     elif offset_x - target_x < 0:
-        text_file.write("d")
+        text_file.write("d") '''
+        bebop.fly_direct(roll=(100 * offset_y / abs(offset_y)), pitch=(100 * offset_x / abs(offset_x)), yaw=0, vertical_movement=(50 * offset_z/ abs(offset_z)), duration=time // 2)
+
+def turn(direction, time):
+    bebop.fly_direct(roll = 0, pitch = 0, yaw = 100 * direction, vertical_movement = 0, duration = time // 2)
 
 
 
@@ -35,7 +41,7 @@ def arm_and_takeoff(vehicle, aTargetAltitude):
 
     print("Basic pre-arm checks")
     # Don't let the user try to arm until autopilot is ready
-    while not vehicle.is_armable:
+    ''' while not vehicle.is_armable:
         print(" Waiting for vehicle to initialise...")
         time.sleep(1)
 
@@ -59,7 +65,8 @@ def arm_and_takeoff(vehicle, aTargetAltitude):
         if vehicle.location.global_relative_frame.alt>=aTargetAltitude*0.95: #Trigger just below target alt.
             print("Reached target altitude")
             break
-        time.sleep(1)
+        time.sleep(1)'''
+    bebop.safe_takeoff(10)
 
 def goto(vehicle, dNorth, dEast, gotoFunction=None):
     """
