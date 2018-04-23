@@ -392,4 +392,3 @@ class DroneVisionGUI:
         # send the command to kill the vision stream (bebop only)
         if (self.is_bebop):
             self.drone_object.stop_video_stream()
-

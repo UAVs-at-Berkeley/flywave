@@ -17,8 +17,8 @@ class UserVision:
     def save_pictures(self, args):
         #print("saving picture")
         img = self.vision.get_latest_valid_picture()
-        cv2.imshow("Video", img)
-        filename = "/images/test_image_%06d.png" % self.index
+        # cv2.imshow("Video", img)
+        filename = "/rightout/test_image_%06d.png" % self.index
         # cv2.imwrite(filename, img)
         self.index +=1
 
@@ -33,7 +33,7 @@ success = bebop.connect(5)
 
 if (success):
     # start up the video
-    bebopVision = DroneVisionGUI(bebop, is_bebop=True)
+    bebopVision = DroneVision(bebop, is_bebop=True)
 
     userVision = UserVision(bebopVision)
     bebopVision.set_user_callback_function(userVision.save_pictures, user_callback_args=None)
@@ -47,21 +47,28 @@ if (success):
         # skipping actually flying for safety purposes indoors - if you want
         # different pictures, move the bebop around by hand
         print("Fly me around by hand!")
-        # bebop.smart_sleep(5)
+        bebop.smart_sleep(5)
         print("Moving the camera using velocity")
-        bebop.pan_tilt_camera_velocity(pan_velocity=0, tilt_velocity=-2, duration=4)
+        # bebop.pan_tilt_camera_velocity(pan_velocity=0, tilt_velocity=-2, duration=4)
         #
-        # bebop.safe_takeoff(10)
+        bebop.safe_takeoff(10)
+        bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=20, duration=1)
+
         count = 0
-        while True and count < 50:
-            bebop.smart_sleep(1)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-            count += 1
+        # while True and count < 30:
+        #     bebop.smart_sleep(1)
+        #     if cv2.waitKey(1) & 0xFF == ord('q'):
+        #         break
+        #     count += 1
+        bebop.fly_direct(roll=15, pitch=0, yaw=0, vertical_movement=0, duration=3)
+        bebop.fly_direct(roll=0, pitch=15, yaw=0, vertical_movement=0, duration=3)
+        bebop.fly_direct(roll=0, pitch=0, yaw=20, vertical_movement=0, duration=4)
+
+        bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=-10, duration=1)
 
 
         # bebop.smart_sleep(50)
-        # bebop.safe_land(10)
+        bebop.safe_land(10)
         print("Finishing demo and stopping vision")
         bebopVision.close_video()
 

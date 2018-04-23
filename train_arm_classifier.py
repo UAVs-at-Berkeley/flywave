@@ -19,7 +19,7 @@ def preprocess(img, scale):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(img,(5,5),0)
     ret, img = cv2.threshold(blur,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    img = cv2.resize(img, (img.shape[0]//scale, img.shape[1]//scale))
+    img = cv2.resize(img, (img.shape[1]//scale, img.shape[0]//scale))
     return img
 
 def rgb2gray(rgb):
@@ -40,10 +40,16 @@ def show_image(a,save=False,save_fname=None):
 data = []
 labels = []
 label_index = 0
-DATAPATH = 'C:/Users/Arun/alex/flywave/arm_gesture_data/'
-width = None
-height = None
+DATAPATH = '/Users/alexchan/Documents/college/uavs/flywave/'
+width = 2
+height = 2
 scale = 2
+
+img = cv2.imread('img.png', 1)
+img = preprocess(img, scale)
+print(img)
+cv2.imshow('test', img)
+cv2.waitKey()
 
 for label in os.listdir(DATAPATH):
     if label == 'rightup' or label == 'leftup':
