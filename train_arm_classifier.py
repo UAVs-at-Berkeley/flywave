@@ -15,11 +15,11 @@ from keras import backend as K
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-def preprocess(img):
+def preprocess(img, scale):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(img,(5,5),0)
     ret, img = cv2.threshold(blur,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    img = cv2.resize(img, (img.shape[0]//2, img.shape[1]//2))
+    img = cv2.resize(img, (img.shape[0]//scale, img.shape[1]//scale))
     return img
 
 def rgb2gray(rgb):
@@ -36,19 +36,36 @@ def show_image(a,save=False,save_fname=None):
         plt.imsave(save_fname,a)
 
 
-
+#
 data = []
 labels = []
 label_index = 0
+DATAPATH = 'C:/Users/Arun/alex/flywave/arm_gesture_data/'
+width = None
+height = None
+scale = 2
 
 for label in os.listdir(DATAPATH):
-    if label == 'ok' or label == 'rock':
+    if label == 'rightup' or label == 'leftup':
         img_dir = DATAPATH + label + '/'
+        count = 0
         for fn in os.listdir(img_dir):
-            img = cv2.imread(img_dir + fn, 1)
-            img = preprocess(img)
-            data.append(img)
-            labels.append(label_index)
+            print(img_dir + fn)
+            if fn != "_DS_Store":
+                try:
+                    img = cv2.imread(img_dir + fn, 1)
+                    print(img.shape)
+                    if width == None or height == None:
+                        height = img.shape[0]
+                        width = img.shape[1]
+                    img = preprocess(img, scale)
+                    if count == 3 or count == 100:
+                        cv2.imshow("Vid", img)
+                    data.append(img)
+                    labels.append(label_index)
+                except:
+                    pass
+            count += 1
         label_index += 1
 
 print("Finished loading data")
@@ -56,17 +73,20 @@ print("Finished loading data")
 data = np.array(data)
 labels = np.array(labels)
 
-np.save('data.npy', data)
-np.save('labels.npy', labels)
+np.save('arm_data.npy', data)
+np.save('arm_labels.npy', labels)
+
+# data = np.load('data.npy')
+# labels = np.load('labels.npy')
 
 x_train, x_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=6)
 
-batch_size = 128
+batch_size = 8
 num_classes = 2
 epochs = 12
 channels = 1
 # input image dimensions
-img_rows, img_cols = 360, 640
+img_rows, img_cols = height//scale, width//scale
 
 # the data, split between train and test sets
 
@@ -90,6 +110,9 @@ print(x_test.shape[0], 'test samples')
 # convert class vectors to binary class matrices
 y_train = keras.utils.to_categorical(y_train, num_classes)
 y_test = keras.utils.to_categorical(y_test, num_classes)
+
+from cnn_model import createModel
+model = createModel(input_shape, 2)
 
 model.compile(loss=keras.losses.categorical_crossentropy,
               optimizer=keras.optimizers.Adadelta(),
