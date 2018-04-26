@@ -5,7 +5,9 @@ import time
 import math
 from keras.models import load_model
 from keras.preprocessing import image
+import cv2
 import numpy as np
+import signal
 import sys
 from Bebop import Bebop
 
@@ -14,6 +16,7 @@ bebop = Bebop()
 success = bebop.connect(5)
 
 active = True
+COUNT_EVERY = 20
 
 def rightArc():
     #rotate in an arc to the right
@@ -39,6 +42,17 @@ def resolveAction(gesture):
     }
     actions[gesture]
     return
+
+def kill(signal, frame):
+    """ Catches SIGINT and lands the drone """
+
+    print("Ctrl+C registed - exiting gracefully")
+    bebop.smart_sleep(5)
+    bebop.safe_land(10)
+    print("Landed successfully. Now exiting")
+    bebop.disconnect()
+
+signal.signal(signal.SIGINT, kill)
 
 if (success):
     # start up the video
@@ -67,19 +81,24 @@ if (success):
         bebop.safe_takeoff(10)
         bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=20, duration=1)
         bebop.smart_sleep(5)
+        
+        count = 0
 
         while active:
-            #TODO: How to get individual frames from video stream in bebop?
-            img = image.load_img('img.png', target_size=(64, 64), grayscale=True)
-            img = image.img_to_array(img)
-            img = np.expand_dims(img, axis=0)
+            if count % COUNT_EVERY == 0:
+                #TODO: How to get individual frames from video stream in bebop?
+                img = bebopVision.get_latest_valid_picture()
+                cv2.imwrite('curr_frame.png', img)
+                img = image.load_img('curr_frame.png', grayscale=True)
+                img = image.img_to_array(img)
 
-            images = np.vstack([img])
-            prediction = model.predict_classes(images, batch_size=10)
-            if len(prediction) > 0:
-                gesture = prediction[0]
-                #print(gesture, prediction)
-                resolveAction(gesture)
+                images = np.vstack([img])
+                prediction = model.predict_classes(images)
+                if len(prediction) > 0:
+                    gesture = prediction[0]
+                    #print(gesture, prediction)
+                    resolveAction(gesture)
+            count += 1
             
         bebop.smart_sleep(5)
         bebop.safe_land(10)
