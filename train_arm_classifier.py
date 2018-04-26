@@ -15,41 +15,15 @@ from keras import backend as K
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
-def preprocess(img, scale):
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(img,(5,5),0)
-    ret, img = cv2.threshold(blur,70,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
-    img = cv2.resize(img, (img.shape[1]//scale, img.shape[0]//scale))
-    return img
+from preprocess import preprocess, rgb2gray, show_image
 
-def rgb2gray(rgb):
-    return np.dot(rgb[...,:3], [0.299, 0.587, 0.114])
-def show_image(a,save=False,save_fname=None):
-    ''' display the image using matplotlib'''
-    plt.figure(figsize=(8,6))
-    a = np.uint8(np.clip(a, 0, 255))
-    plt.imshow(a)
-    plt.show()
-    if save:
-        if save_fname is None:
-            raise ValueError('save_fname must be set if save=True')
-        plt.imsave(save_fname,a)
-
-
-#
 data = []
 labels = []
 label_index = 0
-DATAPATH = '/Users/alexchan/Documents/college/uavs/flywave/'
 width = 2
 height = 2
 scale = 2
-
-img = cv2.imread('img.png', 1)
-img = preprocess(img, scale)
-print(img)
-cv2.imshow('test', img)
-cv2.waitKey()
+DATAPATH = '/Users/alexchan/Documents/college/uavs/flywave/'
 
 for label in os.listdir(DATAPATH):
     if label == 'rightup' or label == 'leftup':
@@ -91,10 +65,8 @@ batch_size = 8
 num_classes = 2
 epochs = 12
 channels = 1
-# input image dimensions
-img_rows, img_cols = height//scale, width//scale
 
-# the data, split between train and test sets
+img_rows, img_cols = height//scale, width//scale
 
 if K.image_data_format() == 'channels_first':
     x_train = x_train.reshape(x_train.shape[0], channels, img_rows, img_cols)

@@ -24,11 +24,3 @@ def show_image(a,save=False,save_fname=None):
         if save_fname is None:
             raise ValueError('save_fname must be set if save=True')
         plt.imsave(save_fname,a)
-
-scale = 2
-
-img = cv2.imread('img.png', 1)
-img = preprocess(img, scale)
-print(img)
-cv2.imshow('test', img)
-cv2.waitKey()
