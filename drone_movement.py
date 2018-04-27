@@ -33,12 +33,18 @@ def leftArc():
 
 def land():
     active = False
+    return
+
+def flip():
+    bebop.flip(back)
+    return
 
 def resolveAction(gesture):
     actions = {
         0 : rightArc,
         1 : leftArc,
-        2 : land
+        2 : land,
+        3 : flip # TODO: Replace this with do nothing command?
     }
     actions[gesture]
     return
@@ -51,6 +57,7 @@ def kill(signal, frame):
     bebop.safe_land(10)
     print("Landed successfully. Now exiting")
     bebop.disconnect()
+    sys.exit(0)
 
 signal.signal(signal.SIGINT, kill)
 
