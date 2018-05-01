@@ -51,8 +51,8 @@ if (success):
         print("Moving the camera using velocity")
         # bebop.pan_tilt_camera_velocity(pan_velocity=0, tilt_velocity=-2, duration=4)
         #
-        bebop.safe_takeoff(10)
-        bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=20, duration=1)
+        # bebop.safe_takeoff(10)
+        # bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=20, duration=1)
 
         count = 0
         # while True and count < 30:
@@ -60,11 +60,11 @@ if (success):
         #     if cv2.waitKey(1) & 0xFF == ord('q'):
         #         break
         #     count += 1
-        bebop.fly_direct(roll=15, pitch=0, yaw=0, vertical_movement=0, duration=3)
-        bebop.fly_direct(roll=0, pitch=15, yaw=0, vertical_movement=0, duration=3)
-        bebop.fly_direct(roll=0, pitch=0, yaw=20, vertical_movement=0, duration=4)
-
-        bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=-10, duration=1)
+        # bebop.fly_direct(roll=15, pitch=0, yaw=0, vertical_movement=0, duration=3)
+        # bebop.fly_direct(roll=0, pitch=15, yaw=0, vertical_movement=0, duration=3)
+        # bebop.fly_direct(roll=0, pitch=0, yaw=20, vertical_movement=0, duration=4)
+        #
+        # bebop.fly_direct(roll=0, pitch=0, yaw=0, vertical_movement=-10, duration=1)
 
 
         # bebop.smart_sleep(50)
