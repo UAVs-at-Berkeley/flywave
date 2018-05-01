@@ -4,6 +4,12 @@ The goal of the FlyWave team of UAVs@Berkeley is to develop a drone that can
 maneuver autonomously using computer vision and deep learning to detect hand
 gestures.
 
+## Team
+- Alex Chan (Project Lead)
+- Timothy Liu
+- Raymond Gu
+- Nick Mecklenburg
+
 ## Highlights
 - Person classification
 - Hand gesture detection
@@ -17,7 +23,7 @@ gestures.
 
 ## Setup
 1. Connect to the Bebop's Wifi.
-2. BEFORE RUNNING ANY SCRIPTS, STAND CLEAR OF DRONE'S TAKEOFF AREA.
+2. **Before running any scripts, stand clear of the drone's takeoff area.**
 3. In terminal, run:
 ```
 python drone_movement.py
